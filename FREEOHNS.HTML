@@ -555,22 +555,22 @@
                 <span id="userName">User</span>
             </div>
             
-            <a href="#" class="menu-item" onclick="toggleMenu(); switchPage('home', document.querySelector('.nav-item.active'))">
+            <div class="menu-item" onclick="toggleMenu(); switchPage('home', document.querySelector('.nav-item:nth-child(1)'))">
                 <div class="menu-item-icon">🏠</div>
                 <span>Home</span>
-            </a>
-            <a href="#" class="menu-item" onclick="toggleMenu(); switchPage('services', document.querySelectorAll('.nav-item')[1])">
+            </div>
+            <div class="menu-item" onclick="toggleMenu(); switchPage('services', document.querySelector('.nav-item:nth-child(2)'))">
                 <div class="menu-item-icon">💼</div>
                 <span>Services</span>
-            </a>
-            <a href="#" class="menu-item" onclick="toggleMenu(); switchPage('notifications', document.querySelectorAll('.nav-item')[2])">
+            </div>
+            <div class="menu-item" onclick="toggleMenu(); switchPage('notifications', document.querySelector('.nav-item:nth-child(3)'))">
                 <div class="menu-item-icon">🔔</div>
                 <span>Notifications</span>
-            </a>
-            <a href="#" class="menu-item" onclick="toggleMenu(); alert('Settings coming soon!')">
+            </div>
+            <div class="menu-item" onclick="toggleMenu(); alert('Settings are now managed via your profile.')">
                 <div class="menu-item-icon">⚙️</div>
                 <span>Settings</span>
-            </a>
+            </div>
             <div class="menu-item" onclick="downloadApp()">
                 <div class="menu-item-icon">📱</div>
                 <span>Download App</span>
@@ -692,22 +692,22 @@
 
         <!-- Bottom Navigation -->
         <nav class="bottom-nav">
-            <a href="#" class="nav-item active" onclick="switchPage('home', this)">
+            <div class="nav-item active" onclick="switchPage('home', this)">
                 <div style="font-size: 20px;">🏠</div>
                 <span>Home</span>
-            </a>
-            <a href="#" class="nav-item" onclick="switchPage('services', this)">
+            </div>
+            <div class="nav-item" onclick="switchPage('services', this)">
                 <div style="font-size: 20px;">💼</div>
                 <span>Services</span>
-            </a>
-            <a href="#" class="nav-item" onclick="switchPage('notifications', this)">
+            </div>
+            <div class="nav-item" onclick="switchPage('notifications', this)">
                 <div style="font-size: 20px;">🔔</div>
                 <span>Inbox</span>
-            </a>
-            <a href="#" class="nav-item" onclick="alert('Settings coming soon!')">
+            </div>
+            <div class="nav-item" onclick="alert('Settings are now managed via your profile.')">
                 <div style="font-size: 20px;">⚙️</div>
                 <span>Settings</span>
-            </a>
+            </div>
         </nav>
     </div>
 
@@ -739,13 +739,13 @@
         // Supabase Configuration
         const SUPABASE_URL = 'https://izselprsvewuuvzclwnc.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_0ynoQ3ZQIxxfRnUlukKwCQ_WhmzkGWQ';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Zapier Webhook URL (Placeholder - User needs to provide their own)
         const ZAPIER_WEBHOOK_URL = '';
 
         async function loginWithGoogle() {
-            const { data, error } = await supabase.auth.signInWithOAuth({
+            const { data, error } = await supabaseClient.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
                     redirectTo: window.location.origin + window.location.pathname
@@ -755,7 +755,7 @@
         }
 
         async function logout() {
-            const { error } = await supabase.auth.signOut();
+            const { error } = await supabaseClient.auth.signOut();
             if (error) console.error('Error logging out:', error.message);
             else updateAuthUI(null);
         }
@@ -781,7 +781,7 @@
         }
 
         // Check auth state on load
-        supabase.auth.onAuthStateChange((event, session) => {
+        supabaseClient.auth.onAuthStateChange((event, session) => {
             updateAuthUI(session?.user || null);
         });
 
@@ -817,7 +817,7 @@
             const location = document.getElementById('bookingLocation').value;
             const time = document.getElementById('bookingTime').value;
             
-            const { data: { user } } = await supabase.auth.getUser();
+            const { data: { user } } = await supabaseClient.auth.getUser();
             
             if (!user) {
                 alert('Please login to confirm your booking.');
@@ -827,7 +827,7 @@
             }
 
             // Save to Supabase
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('bookings')
                 .insert([
                     { 
