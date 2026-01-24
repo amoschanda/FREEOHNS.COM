@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TEG - Premium Services</title>
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --purple: #7B2FF7;
@@ -170,6 +172,7 @@
             align-items: center;
             gap: 15px;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .menu-item:hover {
@@ -203,18 +206,25 @@
             visibility: visible;
         }
 
-        /* Profile Button (moved to menu) */
-        .profile-btn {
+        /* Auth Section in Menu */
+        .auth-section {
+            margin-top: auto;
+            padding: 20px 0;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .user-info {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .user-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            cursor: pointer;
+            border: 2px solid var(--light-blue);
         }
 
         /* Hero Section */
@@ -254,6 +264,8 @@
             transition: transform 0.2s;
             margin-right: 10px;
             margin-bottom: 10px;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .cta-btn:active {
@@ -319,6 +331,7 @@
             align-items: center;
             gap: 8px;
             min-width: 70px;
+            cursor: pointer;
         }
 
         .category-icon {
@@ -362,26 +375,27 @@
             flex-direction: column;
             gap: 10px;
             position: relative;
-            transition: background 0.3s;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .service-card:active {
+        .service-card:hover {
             background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px);
         }
 
         .service-card .icon {
-            font-size: 24px;
-            margin-bottom: 5px;
+            font-size: 32px;
         }
 
         .service-card h3 {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 700;
         }
 
         .service-card p {
-            font-size: 11px;
-            opacity: 0.6;
+            font-size: 12px;
+            opacity: 0.7;
             line-height: 1.4;
         }
 
@@ -389,31 +403,27 @@
             position: absolute;
             top: 10px;
             right: 10px;
-            background: var(--light-blue);
-            color: var(--dark);
-            font-size: 9px;
-            font-weight: 900;
-            padding: 2px 6px;
-            border-radius: 6px;
-            text-transform: uppercase;
+            background: var(--purple);
+            font-size: 10px;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-weight: 700;
         }
 
-        /* Bottom Nav */
+        /* Bottom Navigation */
         .bottom-nav {
             position: fixed;
-            bottom: 20px;
+            bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: calc(100% - 40px);
-            max-width: 440px;
-            height: 65px;
+            width: 100%;
+            max-width: 480px;
             background: rgba(11, 16, 38, 0.8);
             backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
             display: flex;
             justify-content: space-around;
-            align-items: center;
+            padding: 15px 10px;
+            border-top: 1px solid var(--glass-border);
             z-index: 1000;
         }
 
@@ -421,11 +431,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
             color: var(--text);
             text-decoration: none;
-            opacity: 0.5;
-            transition: opacity 0.3s;
+            opacity: 0.6;
+            transition: all 0.3s;
         }
 
         .nav-item.active {
@@ -435,10 +445,10 @@
 
         .nav-item span {
             font-size: 10px;
-            font-weight: 700;
+            font-weight: 600;
         }
 
-        /* Modal Simulation */
+        /* Modal Styles */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -446,22 +456,22 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(10px);
             display: none;
             justify-content: center;
             align-items: flex-end;
-            z-index: 2000;
+            z-index: 3000;
         }
 
         .modal {
             width: 100%;
             max-width: 480px;
             background: var(--dark);
-            border-top: 2px solid var(--purple);
             border-radius: 30px 30px 0 0;
             padding: 30px 20px;
             transform: translateY(100%);
             transition: transform 0.3s ease-out;
+            border-top: 1px solid var(--glass-border);
         }
 
         .modal.open {
@@ -476,34 +486,37 @@
         }
 
         .close-btn {
-            font-size: 24px;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: var(--glass);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
         }
 
-        .booking-form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
         .booking-form input {
+            width: 100%;
             background: var(--glass);
             border: 1px solid var(--glass-border);
             padding: 15px;
             border-radius: 12px;
             color: white;
-            outline: none;
+            margin-bottom: 15px;
+            margin-top: 5px;
         }
 
         .booking-form button {
-            margin-top: 10px;
-            padding: 16px;
+            width: 100%;
+            padding: 15px;
             border-radius: 12px;
             background: var(--purple);
             color: white;
             border: none;
             font-weight: 800;
             font-size: 16px;
+            cursor: pointer;
         }
 
         /* Tabs logic */
@@ -537,6 +550,11 @@
 
         <!-- Side Menu -->
         <div class="side-menu" id="sideMenu">
+            <div id="userInfo" class="user-info">
+                <img id="userAvatar" class="user-avatar" src="" alt="Avatar">
+                <span id="userName">User</span>
+            </div>
+            
             <a href="#" class="menu-item" onclick="toggleMenu(); switchPage('home', document.querySelector('.nav-item.active'))">
                 <div class="menu-item-icon">🏠</div>
                 <span>Home</span>
@@ -553,17 +571,20 @@
                 <div class="menu-item-icon">⚙️</div>
                 <span>Settings</span>
             </a>
-            <div class="menu-item" onclick="toggleMenu(); alert('Profile coming soon!')">
-                <div class="menu-item-icon">👤</div>
-                <span>My Profile</span>
-            </div>
             <div class="menu-item" onclick="downloadApp()">
                 <div class="menu-item-icon">📱</div>
                 <span>Download App</span>
             </div>
-            <div class="menu-item" onclick="toggleMenu(); alert('Help & Support')">
-                <div class="menu-item-icon">❓</div>
-                <span>Help & Support</span>
+            
+            <div class="auth-section">
+                <div id="loginBtn" class="menu-item" onclick="loginWithGoogle()">
+                    <div class="menu-item-icon">🔑</div>
+                    <span>Login with Google</span>
+                </div>
+                <div id="logoutBtn" class="menu-item" style="display: none;" onclick="logout()">
+                    <div class="menu-item-icon">🚪</div>
+                    <span>Logout</span>
+                </div>
             </div>
         </div>
 
@@ -573,10 +594,10 @@
         <!-- HOME PAGE -->
         <div id="home" class="page active">
             <section class="hero">
-                <h1>Book Your Ride <br><span style="color:var(--light-blue)">Instantly.</span></h1>
+                <h1>Contact Us <br><span style="color:var(--light-blue)">Instantly.</span></h1>
                 <p>Reliable, affordable and convenient transportation at your fingertips.</p>
                 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                    <button class="cta-btn" onclick="openBooking('Ride')">Book Now</button>
+                    <a href="tel:+260775778096" class="cta-btn">Contact</a>
                     <button class="download-btn" onclick="downloadApp()">
                         📱 Download App
                     </button>
@@ -588,23 +609,23 @@
                 <span>View All</span>
             </div>
             <div class="categories">
-                <div class="category-item">
+                <div class="category-item" onclick="openBooking('Transport')">
                     <div class="category-icon">🚗</div>
                     <span>Transport</span>
                 </div>
-                <div class="category-item">
+                <div class="category-item" onclick="openBooking('Cleaning')">
                     <div class="category-icon">🧹</div>
                     <span>Cleaning</span>
                 </div>
-                <div class="category-item">
+                <div class="category-item" onclick="openBooking('Electric')">
                     <div class="category-icon">⚡</div>
                     <span>Electric</span>
                 </div>
-                <div class="category-item">
+                <div class="category-item" onclick="openBooking('Design')">
                     <div class="category-icon">📐</div>
                     <span>Design</span>
                 </div>
-                <div class="category-item">
+                <div class="category-item" onclick="openBooking('Security')">
                     <div class="category-icon">🛡️</div>
                     <span>Security</span>
                 </div>
@@ -638,21 +659,21 @@
             </div>
         </div>
 
-        <!-- SERVICES PAGE (Simplified for demo) -->
+        <!-- SERVICES PAGE -->
         <div id="services" class="page">
             <div class="section-title">All Services</div>
             <div style="padding: 20px; opacity: 0.7;">
                 <p>Browsing comprehensive service catalog...</p>
                 <br>
-                <div class="service-card" style="margin-bottom: 15px; width: 100%;">
+                <div class="service-card" style="margin-bottom: 15px; width: 100%;" onclick="openBooking('General Maintenance')">
                     <h3>General Maintenance</h3>
                     <p>Plumbing, painting, and basic repairs.</p>
                 </div>
-                <div class="service-card" style="margin-bottom: 15px; width: 100%;">
+                <div class="service-card" style="margin-bottom: 15px; width: 100%;" onclick="openBooking('IT Support')">
                     <h3>IT Support</h3>
                     <p>Remote and on-site technical assistance.</p>
                 </div>
-                <div class="service-card" style="margin-bottom: 15px; width: 100%;">
+                <div class="service-card" style="margin-bottom: 15px; width: 100%;" onclick="openBooking('Gardening')">
                     <h3>Gardening</h3>
                     <p>Landscaping and lawn maintenance.</p>
                 </div>
@@ -699,10 +720,10 @@
             </div>
             <div class="booking-form">
                 <label style="font-size: 12px; opacity: 0.7;">Location</label>
-                <input type="text" placeholder="Enter your address..." value="123 Digital Avenue, Neo City">
+                <input type="text" id="bookingLocation" placeholder="Enter your address..." value="123 Digital Avenue, Neo City">
                 
                 <label style="font-size: 12px; opacity: 0.7;">Date & Time</label>
-                <input type="datetime-local">
+                <input type="datetime-local" id="bookingTime">
 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0;">
                     <span>Estimated Cost</span>
@@ -715,16 +736,60 @@
     </div>
 
     <script>
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://izselprsvewuuvzclwnc.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_0ynoQ3ZQIxxfRnUlukKwCQ_WhmzkGWQ';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Zapier Webhook URL (Placeholder - User needs to provide their own)
+        const ZAPIER_WEBHOOK_URL = '';
+
+        async function loginWithGoogle() {
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: window.location.origin + window.location.pathname
+                }
+            });
+            if (error) console.error('Error logging in:', error.message);
+        }
+
+        async function logout() {
+            const { error } = await supabase.auth.signOut();
+            if (error) console.error('Error logging out:', error.message);
+            else updateAuthUI(null);
+        }
+
+        function updateAuthUI(user) {
+            const loginBtn = document.getElementById('loginBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const userInfo = document.getElementById('userInfo');
+            const userName = document.getElementById('userName');
+            const userAvatar = document.getElementById('userAvatar');
+
+            if (user) {
+                loginBtn.style.display = 'none';
+                logoutBtn.style.display = 'flex';
+                userInfo.style.display = 'flex';
+                userName.innerText = user.user_metadata.full_name || user.email;
+                userAvatar.src = user.user_metadata.avatar_url || 'https://via.placeholder.com/40';
+            } else {
+                loginBtn.style.display = 'flex';
+                logoutBtn.style.display = 'none';
+                userInfo.style.display = 'none';
+            }
+        }
+
+        // Check auth state on load
+        supabase.auth.onAuthStateChange((event, session) => {
+            updateAuthUI(session?.user || null);
+        });
+
         function switchPage(pageId, element) {
-            // Update Nav UI
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             element.classList.add('active');
-
-            // Update Page Visibility
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
-            
-            // Scroll to top
             window.scrollTo(0,0);
         }
 
@@ -732,7 +797,6 @@
             const overlay = document.getElementById('bookingOverlay');
             const modal = document.getElementById('bookingModal');
             document.getElementById('modalTitle').innerText = 'Book ' + serviceName;
-            
             overlay.style.display = 'flex';
             setTimeout(() => {
                 modal.classList.add('open');
@@ -742,16 +806,58 @@
         function closeBooking() {
             const overlay = document.getElementById('bookingOverlay');
             const modal = document.getElementById('bookingModal');
-            
             modal.classList.remove('open');
             setTimeout(() => {
                 overlay.style.display = 'none';
             }, 300);
         }
 
-        function confirmBooking() {
-            alert('Booking successful! Our professional will be in touch shortly.');
-            closeBooking();
+        async function confirmBooking() {
+            const service = document.getElementById('modalTitle').innerText.replace('Book ', '');
+            const location = document.getElementById('bookingLocation').value;
+            const time = document.getElementById('bookingTime').value;
+            
+            const { data: { user } } = await supabase.auth.getUser();
+            
+            if (!user) {
+                alert('Please login to confirm your booking.');
+                toggleMenu();
+                closeBooking();
+                return;
+            }
+
+            // Save to Supabase
+            const { error } = await supabase
+                .from('bookings')
+                .insert([
+                    { 
+                        user_id: user.id, 
+                        service: service, 
+                        location: location, 
+                        scheduled_at: time,
+                        user_email: user.email
+                    }
+                ]);
+
+            if (error) {
+                console.error('Error saving booking:', error.message);
+                alert('Booking failed. Please try again.');
+            } else {
+                // Send to Zapier if webhook is configured
+                if (ZAPIER_WEBHOOK_URL) {
+                    fetch(ZAPIER_WEBHOOK_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            service, location, time, user_email: user.email
+                        })
+                    });
+                }
+                
+                alert('Booking successful! Our professional will be in touch shortly.');
+                closeBooking();
+            }
         }
 
         function toggleMenu() {
@@ -759,7 +865,6 @@
             const overlay = document.getElementById('menuOverlay');
             const hamburger = document.querySelector('.hamburger');
             const body = document.body;
-            
             menu.classList.toggle('active');
             overlay.classList.toggle('active');
             hamburger.classList.toggle('active');
@@ -768,20 +873,10 @@
 
         function downloadApp() {
             alert('Thank you for your interest! The TEG app is coming soon to iOS and Android.');
-            // In a real app, you would redirect to:
-            // alert('Redirecting to App Store / Google Play...');
         }
 
-        // Handle category clicks to show simple feedback
-        document.querySelectorAll('.category-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const name = item.querySelector('span').innerText;
-                openBooking(name);
-            });
-        });
-
         // Initialize with current date for booking input
-        const dateInput = document.querySelector('input[type="datetime-local"]');
+        const dateInput = document.getElementById('bookingTime');
         if (dateInput) {
             const now = new Date();
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
