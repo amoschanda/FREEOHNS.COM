@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEG - Premium Services</title>
+    <style>
+        :root {
+            --purple: #7B2FF7;
+            --light-blue: #2DD4FF;
+            --dark: #0B1026;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text: #EAF2FF;
+            --accent: #FFDD55;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--dark);
+            background: linear-gradient(135deg, var(--dark) 0%, #1a1b3a 100%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background Blobs */
+        .blob {
+            position: fixed;
+            z-index: -1;
+            filter: blur(60px);
+            border-radius: 50%;
+            opacity: 0.4;
+            animation: move 20s infinite alternate;
+        }
+
+        .blob-1 {
+            width: 300px;
+            height: 300px;
+            background: var(--purple);
+            top: -100px;
+            left: -100px;
+        }
+
+        .blob-2 {
+            width: 250px;
+            height: 250px;
+            background: var(--light-blue);
+            bottom: -50px;
+            right: -50px;
+            animation-delay: -5s;
+        }
+
+        @keyframes move {
+            from { transform: translate(0, 0); }
+            to { transform: translate(50px, 100px); }
+        }
+
+        /* Main Container */
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding-bottom: 80px;
+        }
+
+        /* Header with Hamburger */
+        header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(11, 16, 38, 0.5);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            background: linear-gradient(to right, var(--purple), var(--light-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Hamburger Menu Icon */
+        .hamburger {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 2001;
+        }
+
+        .hamburger span {
+            width: 20px;
+            height: 2.5px;
+            background: var(--text);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(4px, 4px);
+            background: var(--light-blue);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(4px, -4px);
+            background: var(--light-blue);
+        }
+
+        /* Side Menu */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: rgba(11, 16, 38, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            z-index: 2000;
+            transition: left 0.3s ease;
+            padding: 80px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .side-menu.active {
+            left: 0;
+        }
+
+        .menu-item {
+            padding: 15px;
+            border-radius: 12px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover {
+            background: rgba(123, 47, 247, 0.2);
+            border-color: var(--purple);
+            transform: translateX(5px);
+        }
+
+        .menu-item-icon {
+            font-size: 20px;
+            width: 30px;
+            text-align: center;
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(3px);
+            z-index: 1999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Profile Button (moved to menu) */
+        .profile-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            margin: 15px;
+            padding: 25px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(123, 47, 247, 0.3), rgba(45, 212, 255, 0.1));
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(5px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 20px;
+            max-width: 80%;
+        }
+
+        .cta-btn {
+            background: var(--accent);
+            color: var(--dark);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 800;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 221, 85, 0.3);
+            transition: transform 0.2s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .cta-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Download Button */
+        .download-btn {
+            background: transparent;
+            color: var(--text);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 800;
+            border: 2px solid var(--light-blue);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .download-btn:hover {
+            background: var(--light-blue);
+            color: var(--dark);
+            transform: translateY(-2px);
+        }
+
+        .download-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Categories Scroll */
+        .section-title {
+            padding: 20px 20px 10px;
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title span {
+            font-size: 12px;
+            color: var(--light-blue);
+            font-weight: 400;
+        }
+
+        .categories {
+            display: flex;
+            overflow-x: auto;
+            padding: 10px 20px;
+            gap: 15px;
+            scrollbar-width: none;
+        }
+
+        .categories::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            min-width: 70px;
+        }
+
+        .category-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            transition: all 0.3s;
+        }
+
+        .category-item:active .category-icon {
+            background: var(--purple);
+            transform: translateY(-5px);
+        }
+
+        .category-item span {
+            font-size: 11px;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .service-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+            transition: background 0.3s;
+        }
+
+        .service-card:active {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .service-card .icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .service-card h3 {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .service-card p {
+            font-size: 11px;
+            opacity: 0.6;
+            line-height: 1.4;
+        }
+
+        .badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--light-blue);
+            color: var(--dark);
+            font-size: 9px;
+            font-weight: 900;
+            padding: 2px 6px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 440px;
+            height: 65px;
+            background: rgba(11, 16, 38, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text);
+            text-decoration: none;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+
+        .nav-item.active {
+            opacity: 1;
+            color: var(--light-blue);
+        }
+
+        .nav-item span {
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        /* Modal Simulation */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 2000;
+        }
+
+        .modal {
+            width: 100%;
+            max-width: 480px;
+            background: var(--dark);
+            border-top: 2px solid var(--purple);
+            border-radius: 30px 30px 0 0;
+            padding: 30px 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease-out;
+        }
+
+        .modal.open {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .close-btn {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .booking-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .booking-form input {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 15px;
+            border-radius: 12px;
+            color: white;
+            outline: none;
+        }
+
+        .booking-form button {
+            margin-top: 10px;
+            padding: 16px;
+            border-radius: 12px;
+            background: var(--purple);
+            color: white;
+            border: none;
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        /* Tabs logic */
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+
+        /* Body scroll lock when menu open */
+        body.menu-open {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="app-container">
+        <!-- Header with Hamburger -->
+        <header>
+            <div class="logo">TEG</div>
+            <div class="hamburger" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </header>
+
+        <!-- Side Menu -->
+        <div class="side-menu" id="sideMenu">
+            <a href="#" class="menu-item" onclick="toggleMenu(); switchPage('home', document.querySelector('.nav-item.active'))">
+                <div class="menu-item-icon">🏠</div>
+                <span>Home</span>
+            </a>
+            <a href="#" class="menu-item" onclick="toggleMenu(); switchPage('services', document.querySelectorAll('.nav-item')[1])">
+                <div class="menu-item-icon">💼</div>
+                <span>Services</span>
+            </a>
+            <a href="#" class="menu-item" onclick="toggleMenu(); switchPage('notifications', document.querySelectorAll('.nav-item')[2])">
+                <div class="menu-item-icon">🔔</div>
+                <span>Notifications</span>
+            </a>
+            <a href="#" class="menu-item" onclick="toggleMenu(); alert('Settings coming soon!')">
+                <div class="menu-item-icon">⚙️</div>
+                <span>Settings</span>
+            </a>
+            <div class="menu-item" onclick="toggleMenu(); alert('Profile coming soon!')">
+                <div class="menu-item-icon">👤</div>
+                <span>My Profile</span>
+            </div>
+            <div class="menu-item" onclick="downloadApp()">
+                <div class="menu-item-icon">📱</div>
+                <span>Download App</span>
+            </div>
+            <div class="menu-item" onclick="toggleMenu(); alert('Help & Support')">
+                <div class="menu-item-icon">❓</div>
+                <span>Help & Support</span>
+            </div>
+        </div>
+
+        <!-- Menu Overlay -->
+        <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+
+        <!-- HOME PAGE -->
+        <div id="home" class="page active">
+            <section class="hero">
+                <h1>Book Your Ride <br><span style="color:var(--light-blue)">Instantly.</span></h1>
+                <p>Reliable, affordable and convenient transportation at your fingertips.</p>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                    <button class="cta-btn" onclick="openBooking('Ride')">Book Now</button>
+                    <button class="download-btn" onclick="downloadApp()">
+                        📱 Download App
+                    </button>
+                </div>
+            </section>
+
+            <div class="section-title">
+                Categories
+                <span>View All</span>
+            </div>
+            <div class="categories">
+                <div class="category-item">
+                    <div class="category-icon">🚗</div>
+                    <span>Transport</span>
+                </div>
+                <div class="category-item">
+                    <div class="category-icon">🧹</div>
+                    <span>Cleaning</span>
+                </div>
+                <div class="category-item">
+                    <div class="category-icon">⚡</div>
+                    <span>Electric</span>
+                </div>
+                <div class="category-item">
+                    <div class="category-icon">📐</div>
+                    <span>Design</span>
+                </div>
+                <div class="category-item">
+                    <div class="category-icon">🛡️</div>
+                    <span>Security</span>
+                </div>
+            </div>
+
+            <div class="section-title">
+                Featured Services
+            </div>
+            <div class="services-grid">
+                <div class="service-card" onclick="openBooking('Cleaning')">
+                    <span class="badge">Popular</span>
+                    <div class="icon">🧹</div>
+                    <h3>Home Cleaning</h3>
+                    <p>Sparkling clean results for your sweet home.</p>
+                </div>
+                <div class="service-card" onclick="openBooking('Electrical')">
+                    <div class="icon">⚡</div>
+                    <h3>Electrical Rep.</h3>
+                    <p>Professional fix for all your wiring needs.</p>
+                </div>
+                <div class="service-card" onclick="openBooking('Interior')">
+                    <div class="icon">🎨</div>
+                    <h3>Interior Design</h3>
+                    <p>Transform your living space into art.</p>
+                </div>
+                <div class="service-card" onclick="openBooking('Exterior')">
+                    <div class="icon">🏡</div>
+                    <h3>Exterior Design</h3>
+                    <p>Curb appeal and structural beauty.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SERVICES PAGE (Simplified for demo) -->
+        <div id="services" class="page">
+            <div class="section-title">All Services</div>
+            <div style="padding: 20px; opacity: 0.7;">
+                <p>Browsing comprehensive service catalog...</p>
+                <br>
+                <div class="service-card" style="margin-bottom: 15px; width: 100%;">
+                    <h3>General Maintenance</h3>
+                    <p>Plumbing, painting, and basic repairs.</p>
+                </div>
+                <div class="service-card" style="margin-bottom: 15px; width: 100%;">
+                    <h3>IT Support</h3>
+                    <p>Remote and on-site technical assistance.</p>
+                </div>
+                <div class="service-card" style="margin-bottom: 15px; width: 100%;">
+                    <h3>Gardening</h3>
+                    <p>Landscaping and lawn maintenance.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOTIFICATIONS PAGE -->
+        <div id="notifications" class="page">
+            <div class="section-title">Notifications</div>
+            <div style="padding: 20px; text-align: center; margin-top: 40px;">
+                <div style="font-size: 50px; margin-bottom: 20px;">🔔</div>
+                <p>No new notifications yet.</p>
+                <p style="font-size: 12px; opacity: 0.5;">We'll let you know when things happen.</p>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active" onclick="switchPage('home', this)">
+                <div style="font-size: 20px;">🏠</div>
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-item" onclick="switchPage('services', this)">
+                <div style="font-size: 20px;">💼</div>
+                <span>Services</span>
+            </a>
+            <a href="#" class="nav-item" onclick="switchPage('notifications', this)">
+                <div style="font-size: 20px;">🔔</div>
+                <span>Inbox</span>
+            </a>
+            <a href="#" class="nav-item" onclick="alert('Settings coming soon!')">
+                <div style="font-size: 20px;">⚙️</div>
+                <span>Settings</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Booking Modal -->
+    <div class="modal-overlay" id="bookingOverlay">
+        <div class="modal" id="bookingModal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Book Service</h2>
+                <div class="close-btn" onclick="closeBooking()">✕</div>
+            </div>
+            <div class="booking-form">
+                <label style="font-size: 12px; opacity: 0.7;">Location</label>
+                <input type="text" placeholder="Enter your address..." value="123 Digital Avenue, Neo City">
+                
+                <label style="font-size: 12px; opacity: 0.7;">Date & Time</label>
+                <input type="datetime-local">
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0;">
+                    <span>Estimated Cost</span>
+                    <span style="color: var(--light-blue); font-weight: 800; font-size: 20px;">$45.00</span>
+                </div>
+                
+                <button onclick="confirmBooking()">Confirm Appointment</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchPage(pageId, element) {
+            // Update Nav UI
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+
+            // Update Page Visibility
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo(0,0);
+        }
+
+        function openBooking(serviceName) {
+            const overlay = document.getElementById('bookingOverlay');
+            const modal = document.getElementById('bookingModal');
+            document.getElementById('modalTitle').innerText = 'Book ' + serviceName;
+            
+            overlay.style.display = 'flex';
+            setTimeout(() => {
+                modal.classList.add('open');
+            }, 10);
+        }
+
+        function closeBooking() {
+            const overlay = document.getElementById('bookingOverlay');
+            const modal = document.getElementById('bookingModal');
+            
+            modal.classList.remove('open');
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+        }
+
+        function confirmBooking() {
+            alert('Booking successful! Our professional will be in touch shortly.');
+            closeBooking();
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('sideMenu');
+            const overlay = document.getElementById('menuOverlay');
+            const hamburger = document.querySelector('.hamburger');
+            const body = document.body;
+            
+            menu.classList.toggle('active');
+            overlay.classList.toggle('active');
+            hamburger.classList.toggle('active');
+            body.classList.toggle('menu-open');
+        }
+
+        function downloadApp() {
+            alert('Thank you for your interest! The TEG app is coming soon to iOS and Android.');
+            // In a real app, you would redirect to:
+            // alert('Redirecting to App Store / Google Play...');
+        }
+
+        // Handle category clicks to show simple feedback
+        document.querySelectorAll('.category-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const name = item.querySelector('span').innerText;
+                openBooking(name);
+            });
+        });
+
+        // Initialize with current date for booking input
+        const dateInput = document.querySelector('input[type="datetime-local"]');
+        if (dateInput) {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            dateInput.value = now.toISOString().slice(0, 16);
+        }
+    </script>
+</body>
+</html>
